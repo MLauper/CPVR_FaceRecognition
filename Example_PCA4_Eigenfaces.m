@@ -11,7 +11,7 @@
 %##########################################################################
 clear all; close all; clc; %clear matrices, close figures & clear cmd wnd.
 
-%% Download the face database
+%% Download the face databases
 % You can find the database at the follwoing link, 
 % http://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html The
 % database contains 400 pictures of 40 subjects. Download the zipped
@@ -41,18 +41,10 @@ end;
 figure('Color',[1 1 1]); 
 imshow(reshape(mn, imsize)); title('mean face');
 
-%% Step 3: Calculate Eigenvectors & Eigenvalues
-% Method 1 using princomp from Matlab
-% tic;
-% [eigvec, score, eigval] = princomp(faces');     %eigvec: <10304x10304>, eigval: <10304x1> sorted descendent
-% eigvec = eigvec(:,1:nImages);                   %eigvec: Cut down to <10304x400>
-% toc;
-
 %% Step 3: Calculate Eigenvectors & Eigenvalues 
 % Method 2: Create covariance matrix faster by using 
 % Turk and Pentland's trick to get the eigenvectors of faces*faces' from
 % the eigenvectors of faces'*faces
-tic;
 C = faces'*faces;
 [eigvec,eigval] = eig(C);
 eigvec = faces * eigvec;                        % Convert eigenvectors back as if they came from A'*A
@@ -62,28 +54,6 @@ eigval = diag(eigval);                          % Get the eigenvalue from the di
 eigval = eigval / nImages;                      % Normalize eigenvalues
 [eigval, indices] = sort(eigval, 'descend');    % Sort the eigenvalues
 eigvec = eigvec(:, indices);                    % Sort the eigenvectors accordingly
-toc;
-
-% tic;
-% C2 = faces'*faces;
-% C2 = C2./(size(faces,1)-1);
-% [eigvec2,eigval2] = eig(C2);
-% % eigvec & eigval are in fact sorted but in the wrong order
-% eigval2 = diag(eigval2);                          % Get the eigenvalue from the diagonal
-% [eigval2, indices2] = sort(eigval2, 'descend');    % Sort the eigenvalues
-% eigvec2 = eigvec2(:, indices2);                    % Sort the eigenvectors accordingly
-% toc;
-% 
-% tic;
-% C3 = cov(faces);
-% [eigvec3,eigval3] = eig(C3);
-% % eigvec & eigval are in fact sorted but in the wrong order
-% eigval3 = diag(eigval3);                          % Get the eigenvalue from the diagonal
-% [eigval3, indices3] = sort(eigval3, 'descend');    % Sort the eigenvalues
-% eigvec3 = eigvec3(:, indices3);                    % Sort the eigenvectors accordingly
-% toc;
-
-
 
 % Display the 30 first eigenvectors as eigenfaces
 figure('Color',[1 1 1]);
