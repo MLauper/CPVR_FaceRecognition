@@ -1,6 +1,7 @@
 %##########################################################################
-% File:       FaceDetection.m
-% Purpose:    Detect faces on a group picture
+% File:       ViolaJones_FaceDetection.m
+% Purpose:    Detect faces on group pictures and save them in the same file
+%             structure.
 % Author:     Fabian Bigler, Marco Lauper
 % Date:       Nov-2016
 %##########################################################################
