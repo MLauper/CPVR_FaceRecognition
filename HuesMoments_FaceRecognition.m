@@ -4,11 +4,12 @@
 % Author:     Fabian Bigler, Marco Lauper
 % Date:       Nov-2016
 %##########################################################################
-clear;
+clear all;
 baseOutPutDir = '.\out\FaceRecognition\HuesMoments\';
 
 % search pictures from ViolaJones Face detection
-searchDir = '.\out\FaceDetection\ViolaJones\2016HS\_DSC0372.JPG\';
+%searchDir = '.\out\FaceDetection\ViolaJones\2016HS\_DSC0372.JPG\';
+searchDir = '.\out\FaceDetection\ViolaJones\TEST\';
 
 trainingSetDir = '.\Images\cpvr_faces_320\';
 
@@ -43,15 +44,20 @@ end
 
 countImages = k;
 
-searchPic = strcat(searchDir, '07.jpg');
-searchPicGray = rgb2gray(imcrop(imread(searchPic), smallestImgRectangle));
+searchPic = strcat(searchDir, '02.jpg');
+searchPicOrig = imread(searchPic);
+searchPicCropped = imcrop(searchPicOrig, smallestImgRectangle);
+searchPicGray = rgb2gray(searchPicCropped);
 searchPicMoments = abs(log10(invmoments(searchPicGray)));
 
 %transpose so it matches trainset moments
 %transposedSearchPicMoments = searchPicMoments';
+%firstMoments = trainingFaceMoments{1};
+%firstMomentsDiff = sumsqr(firstMoments-searchPicMoments);
 
 for i=1:countImages   
-    resultMomentsDiff = dot(trainingFaceMoments{i}-searchPicMoments, trainingFaceMoments{i}-searchPicMoments);   
+    %resultMomentsDiff = dot(trainingFaceMoments{i}-searchPicMoments, trainingFaceMoments{i}-searchPicMoments);
+    resultMomentsDiff = sumsqr(trainingFaceMoments{i}-searchPicMoments);    
     distanceMoments(i) = resultMomentsDiff;
 end;
 
