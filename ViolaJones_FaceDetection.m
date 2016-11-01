@@ -12,23 +12,23 @@ files = dir(baseInputDir);
 % Get a logical vector that tells which is a directory.
 dirFlags = [files.isdir];
 % Extract only those that are directories.
-groupFolders = files(dirFlags);
+classFolders = files(dirFlags);
 % remove first two entries (it's always '.' and '..')
-groupFolders(1:2) = [];
+classFolders(1:2) = [];
 
-for i = 1 : length(groupFolders)    
+for i = 1 : length(classFolders)    
     
-    mkdir(strcat(baseOutPutDir,groupFolders(i).name));
+    mkdir(strcat(baseOutPutDir,classFolders(i).name));
     
-    groupPictureDirectory = strcat(baseInputDir,'\',groupFolders(i).name);
+    groupPictureDirectory = strcat(baseInputDir,'\',classFolders(i).name);
     groupPictures = dir(groupPictureDirectory);
     groupPictures(1:2) = [];
     for j = 1 : length(groupPictures)        
         %create output directory for group picture
-        mkdir(strcat(baseOutPutDir, groupFolders(i).name,'\', groupPictures(j).name));
+        mkdir(strcat(baseOutPutDir, classFolders(i).name,'\', groupPictures(j).name));
          %Detect objects using Viola-Jones Algorithm
         faceDetector = vision.CascadeObjectDetector;
-        faceDetector.MinSize = [100 100];
+        faceDetector.MinSize = [130 130];
 
         %Read the input image        
         inputImg = imread(strcat(groupPictureDirectory,'\', groupPictures(j).name));
@@ -38,7 +38,7 @@ for i = 1 : length(groupFolders)
 
         %export images to filesystem
         for k = 1:size(boundingBoxes,1)                  
-            outputPath = strcat(baseOutPutDir,groupFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
+            outputPath = strcat(baseOutPutDir,classFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
             %outputPath = sprintf(strcat(outputFolder,'%02d.jpg'),k);
             
             %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);
