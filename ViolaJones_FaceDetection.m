@@ -16,6 +16,8 @@ classFolders = files(dirFlags);
 % remove first two entries (it's always '.' and '..')
 classFolders(1:2) = [];
 
+outputMask = floor(imread('.\Images\mask_320.jpg')./255);
+
 for i = 1 : length(classFolders)    
     
     mkdir(strcat(baseOutPutDir,classFolders(i).name));
@@ -56,7 +58,8 @@ for i = 1 : length(classFolders)
             %outputPath = sprintf(strcat(outputFolder,'%02d.jpg'),k);
             
             %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);
-            outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[320,240]);
+            imagesc
+            outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[320,240]).*outputMask;
             imwrite(outputImg, outputPath);    
         end
 
