@@ -18,6 +18,8 @@ dirFlags = [files.isdir];
 trainingFacePictureFolders = files(dirFlags);
 trainingFacePictureFolders(1:2) = [];
 smallestImgSize = [0,0, 239, 320];
+outputMask = floor(imcrop(imread('.\Images\mask_320.jpg'), smallestImgSize)./255);
+
 k=0;
 %building training set
 for i = 1 : length(trainingFacePictureFolders)        
@@ -28,7 +30,7 @@ for i = 1 : length(trainingFacePictureFolders)
         filename = strcat(trainingSetDir,trainingFacePictureFolders(i).name,'\',trainingFacePictureFiles(j).name);
         image_data = imread(filename);             
         k = k + 1;                 
-        image_data = imcrop(image_data, smallestImgSize); 
+        image_data = imcrop(image_data, smallestImgSize).*outputMask;; 
         trainingFaces(:,k) = image_data(:);
     end    
 end

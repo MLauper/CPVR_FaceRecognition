@@ -57,8 +57,7 @@ for i = 1 : length(classFolders)
             outputPath = strcat(baseOutPutDir,classFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
             %outputPath = sprintf(strcat(outputFolder,'%02d.jpg'),k);
             
-            %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);
-            imagesc
+            %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);            
             outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[320,240]).*outputMask;
             imwrite(outputImg, outputPath);    
         end
