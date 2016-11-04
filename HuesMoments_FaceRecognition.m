@@ -68,9 +68,8 @@ for i = 1 : length(classFolders)
               searchPicGray = rgb2gray(searchPicCropped);
               searchPicMoments = abs(log10(invmoments(searchPicGray)));
               
-              for x=1:countTrainingImages   
-                    %resultMomentsDiff = dot(trainingFaceMoments{i}-searchPicMoments, trainingFaceMoments{i}-searchPicMoments);
-                    resultMomentsDiff = sumsqr(trainingFaceMoments{x}-searchPicMoments);    
+              for x=1:countTrainingImages                      
+                    resultMomentsDiff = norm(trainingFaceMoments{x}-searchPicMoments);    
                     distanceMoments(x) = resultMomentsDiff;
               end
                 [sortedDistanceMoments, sortIndex] = sort(distanceMoments); % sort distances                   
@@ -80,8 +79,8 @@ for i = 1 : length(classFolders)
                 subplot(2,7,1); 
                 imshow(searchPic);
                 title('Search Picture');
-                for y=2:14
-                    subplot(2,7,y); 
+                for y=1:13
+                    subplot(2,7,y+1); 
                     %imshow(searchPic);
                     %imshow(trainingFaceImages(:,sortIndex(i)));   
                     imshow(trainingFaceImages{sortIndex(y)});
@@ -94,70 +93,3 @@ for i = 1 : length(classFolders)
           %outputPath = strcat(baseOutPutDir,classFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
      end
 end;
-
-
-
-
-% searchPic = strcat(baseInputDir, '02.jpg');
-% searchPicOrig = imread(searchPic);
-% searchPicCropped = imcrop(searchPicOrig, smallestImgRectangle);
-% searchPicGray = rgb2gray(searchPicCropped);
-% searchPicMoments = abs(log10(invmoments(searchPicGray)));
-% 
-% %transpose so it matches trainset moments
-% %transposedSearchPicMoments = searchPicMoments';
-% %firstMoments = trainingFaceMoments{1};
-% %firstMomentsDiff = sumsqr(firstMoments-searchPicMoments);
-% 
-% for i=1:countImages   
-%     %resultMomentsDiff = dot(trainingFaceMoments{i}-searchPicMoments, trainingFaceMoments{i}-searchPicMoments);
-%     resultMomentsDiff = sumsqr(trainingFaceMoments{i}-searchPicMoments);    
-%     distanceMoments(i) = resultMomentsDiff;
-% end;
-% 
-% % Sort the distances and show the nearest 14 faces
-% [sortedDistanceMoments, sortIndex] = sort(distanceMoments); % sort distances
-% 
-% smallestImgRectangle = [0,0, 239, 320];
-% 
-% %figure('Color',[1 1 1]);
-% 
-% 
-% searchResult = figure('Color',[1 1 1]);
-% subplot(2,7,1); 
-% imshow(searchPic);
-% title('Search Picture');
-% for i=2:15
-%     subplot(2,7,i); 
-%     %imshow(searchPic);
-%     %imshow(trainingFaceImages(:,sortIndex(i)));   
-%     imshow(trainingFaceImages{sortIndex(i)});
-%     %imshow((reshape(mn+faces(:,sortIndex(i)), imsize))); 
-%     title(sprintf('Dist=%2.2f',sortedDistanceMoments(i)));
-% end;
-% 
-% saveas(searchResult,'FigureSearch.png')
-
-
-% nImages = k;                     %total number of images
-% imsize = size(image_data);       %size of image (they all should have the same size) 
-% nPixels = imsize(1)*imsize(2);   %number of pixels in image
-% faceImages = double(faceImages)/255;       %convert to double and normalize
-
-
-
-% 
-% k = 0;
-% for i=1:1:40
-%     for j=1:1:10
-%         filename  = sprintf('.\\Images\\att_faces\\s%d\\%d.pgm',i,j);
-%         
-%         image_data = imread(filename);
-%         k = k + 1;
-%         faces(:,k) = image_data(:);
-%      end;
-% end;
-% nImages = k;                     %total number of images
-% imsize = size(image_data);       %size of image (they all should have the same size) 
-% nPixels = imsize(1)*imsize(2);   %number of pixels in image
-% faces = double(faces)/255;       %convert to double and normalize
