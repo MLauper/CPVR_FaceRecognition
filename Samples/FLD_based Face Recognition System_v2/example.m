@@ -13,8 +13,8 @@ close all
 % You can customize and fix initial directory paths
 %TrainDatabasePath = uigetdir(strcat(matlabroot,'\work'), 'Select training database path' );
 %TestDatabasePath = uigetdir(strcat(matlabroot,'\work'), 'Select test database path');
-TrainDatabasePath = 'C:\Users\Marco\Desktop\FLD_based Face Recognition System_v2\FLD_based Face Recognition System_v2\Train2';
-TestDatabasePath = 'C:\Users\Marco\Desktop\FLD_based Face Recognition System_v2\FLD_based Face Recognition System_v2\Test2';
+TrainDatabasePath = '.\CustomTrainDatabase';
+TestDatabasePath = '.\CustomTestDatabase';
 
 prompt = {'Enter test image name (a number between 1 to 10):'};
 dlg_title = 'Input of FLD-Based Face Recognition System';
@@ -22,7 +22,7 @@ num_lines= 1;
 def = {'1'};
 
 %TestImage  = inputdlg(prompt,dlg_title,num_lines,def);
-TestImage  = '1';
+TestImage  = '02';
 TestImage = strcat(TestDatabasePath,'\',char(TestImage),'.jpg');
 im = imread(TestImage);
 im = imresize(im, [160,120]);
