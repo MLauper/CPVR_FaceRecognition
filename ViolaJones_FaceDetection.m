@@ -36,13 +36,27 @@ for i = 1 : length(classFolders)
         %Returns Bounding Box values based on number of objects
         boundingBoxes = step(faceDetector,inputImg);
 
+        for k = 1:size(boundingBoxes,1)
+            size_x = boundingBoxes(k,4);
+            size_y = boundingBoxes(k,3);
+            
+            % x / y = 320 / 240
+            % y is fixed
+            desired_size_x = (320/240) * size_y; 
+            delta_size_x = desired_size_x - size_x;
+            delta_correction_x = floor(delta_size_x / 2);
+            
+            boundingBoxes(k,2) = floor(boundingBoxes(k,2) - delta_correction_x);
+            boundingBoxes(k,4) = floor(boundingBoxes(k,4) + delta_size_x);
+        end
+        
         %export images to filesystem
         for k = 1:size(boundingBoxes,1)                  
             outputPath = strcat(baseOutPutDir,classFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
             %outputPath = sprintf(strcat(outputFolder,'%02d.jpg'),k);
             
             %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);
-            outputImg = imcrop(inputImg, boundingBoxes(k,:));
+            outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[320,240]);
             imwrite(outputImg, outputPath);    
         end
 
