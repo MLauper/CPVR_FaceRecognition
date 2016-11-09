@@ -117,14 +117,3 @@ $myImageCodecInfo = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders()|
 $bmpFile.Save($identifiedImagePath, $myImageCodecInfo, $($encoderParams))
 
 popd
-
-
-#New-Person person-0023 -personGroupId 'class2016'
-#New-PersonFace -personName person-00
-
-
-
-
-
-#$personNames | ? {$_ -like 'k*'}
-
