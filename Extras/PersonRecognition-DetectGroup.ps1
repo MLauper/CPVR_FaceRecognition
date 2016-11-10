@@ -1,4 +1,5 @@
-﻿
+$imageToShrinkPath = "C:\Users\Marco\Desktop\4062323126531796499-account_id=1.jpg"
+
 Import-Module ps-AzureFaceAPI
 Add-Type -AssemblyName System.Drawing
 [void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -6,36 +7,8 @@ Add-Type -AssemblyName System.Drawing
 pushd
 cd 'C:\Program Files\WindowsPowerShell\Modules\ps-AzureFaceAPI\1.0.1\'
 
-$personNames = @('Tschanz', 'Laubscher', 'Knoepfel', 'Haeni', 'James', 'Loosli', 'Genecand', 'Tuescher', 'Buchegger', 'Cardini', 'Zingg', 'Gerber', 'Lauper', 'Bigler')
-
-$trainingFacePictureDir = 'C:\Users\FabianBigler\Documents\MATLAB\CPVR_FaceRecognition\Images\cpvr_faces_320'
-$trainingFaceDirectories = Get-ChildItem $trainingFacePictureDir | ? {[int32]$_.Name -ge 23}
-
+$personNames = @('0023: Tschanz', '0024: Laubscher', '0025: Knoepfel', '0026: Haeni', '0027: James', '0028: Loosli', '0029: Genecand', '0030: Tuescher', '0031: Buchegger', '0032: Cardini', '0033: Zingg', '0034: Gerber', '0035: Lauper', '0036: Bigler')
 $groupName = 'class2016'
-try{ Remove-PersonGroup $groupName } catch {}
-New-PersonGroup $groupName
-$index = 0
-$trainingFaceDirectories |  % {
-    New-Person $personNames[$index] -personGroupId $groupName
-    $pictures = gci $_.FullName -Filter '*.jpg'   
-    $pictures | % {
-        New-PersonFace -personName $personNames[$index] -personGroupId $groupName -localImagePath $_.FullName
-    }
-
-    $index++
-}
-
-Start-PersonGroupTraining -PersonGroupId $groupName
-
-while ($true)
-{
-    $state = Get-PersonGroupTrainingStatus -PersonGroupId $groupName;
-    if($state.status -eq 'succeeded') {break}
-}
-
-
-$imageToShrinkPath = "C:\Users\FabianBigler\Documents\MATLAB\CPVR_FaceRecognition\Images\cpvr_classes\2016HS\_DSC0367.JPG"
-
 
 $imageToShrink = Get-Item $imageToShrinkPath
 $originalBackupPath = ($imageToShrink.Directory.FullName + "\" + $imageToShrink.BaseName + ".original" + $imageToShrink.Extension)
@@ -45,7 +18,7 @@ Copy-Item $imageToShrink $originalBackupPath -Force
 Copy-Item $imageToShrink $shrinkedImagePath -Force
 
 $quality = 100
-while ((Get-Item $shrinkedImagePath).Length -gt 4000000){
+Do{
     $Image = [System.Drawing.Image]::FromFile($imageToShrinkPath)
 
     $Scale = 1.0
@@ -63,7 +36,7 @@ while ((Get-Item $shrinkedImagePath).Length -gt 4000000){
     $myImageCodecInfo = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders()|where {$_.MimeType -eq 'image/jpeg'}
     
     $shrinkedImage.Save($shrinkedImagePath, $myImageCodecInfo, $($encoderParams))
-}
+}while ((Get-Item $shrinkedImagePath).Length -gt 4000000)
 
 
 $detectedFaces = Invoke-FaceDetection -localImagePath $shrinkedImagePath
@@ -90,6 +63,7 @@ $format.Alignment = [System.Drawing.StringAlignment]::Center
 $format.LineAlignment = [System.Drawing.StringAlignment]::Center
 
 $index = 0;
+$personNumber = 23
 $detectedFaces | % {
     $detectedFace = $_;
     $candidate = $identifiedFaces[$index].candidates | select -First 1;   
@@ -100,8 +74,9 @@ $detectedFaces | % {
 
     $rectF = [System.Drawing.RectangleF]::FromLTRB($_.faceRectangle.left, $_.faceRectangle.top,$_.faceRectangle.left+
                                                     $_.faceRectangle.width, $_.faceRectangle.top+$_.faceRectangle.height)
-    $graph.DrawString($person.name+': '+$candidate.confidence, $font,$brush,$rectF, $format);
-    $index++;
+    $graph.DrawString($person.name+', '+$candidate.confidence +', ' + ($index+23), $font,$brush,$rectF, $format);
+    $index++
+    $personNumber++
 }
 
 $rect = new-object Drawing.Rectangle $_.faceRectangle.left, $_.faceRectangle.top, $_.faceRectangle.width, $_.faceRectangle.height
@@ -115,5 +90,6 @@ $encoderParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter($my
 $myImageCodecInfo = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders()|where {$_.MimeType -eq 'image/jpeg'}
 
 $bmpFile.Save($identifiedImagePath, $myImageCodecInfo, $($encoderParams))
+
 
 popd
