@@ -16,7 +16,7 @@ classFolders = files(dirFlags);
 % remove first two entries (it's always '.' and '..')
 classFolders(1:2) = [];
 
-outputMask = floor(imread('.\Images\mask_320.jpg')./255);
+outputMask = floor(imread('.\Images\mask_160.jpg')./255);
 
 for i = 1 : length(classFolders)    
     
@@ -44,7 +44,8 @@ for i = 1 : length(classFolders)
             
             % x / y = 320 / 240
             % y is fixed
-            desired_size_x = (320/240) * size_y; 
+            % desired_size_x = (320/240) * size_y; 
+            desired_size_x = (160/120) * size_y; 
             delta_size_x = desired_size_x - size_x;
             delta_correction_x = floor(delta_size_x / 2);
             
@@ -58,7 +59,7 @@ for i = 1 : length(classFolders)
             %outputPath = sprintf(strcat(outputFolder,'%02d.jpg'),k);
             
             %outputPath  = sprintf('.\\out\\FaceDetection\\ViolaJones\\%02d.jpg',i);            
-            outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[320,240]).*outputMask;
+            outputImg = imresize(imcrop(inputImg, boundingBoxes(k,:)),[160,120]).*outputMask;
             imwrite(outputImg, outputPath);    
         end
 
@@ -98,8 +99,3 @@ end
 
 %IBody = insertObjectAnnotation(I, 'rectangle',bboxBody,'Upper Body');
 %figure, imshow(IBody), title('Detected upper bodies');
-
-
-
-
-

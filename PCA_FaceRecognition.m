@@ -10,15 +10,15 @@ baseOutputDir = '.\out\FaceRecognition\PCA\';
 % search pictures from ViolaJones Face detection
 baseInputDir = '.\out\FaceDetection\ViolaJones\';
 
-trainingSetDir = '.\Images\cpvr_faces_320\';
+trainingSetDir = '.\Images\cpvr_faces_160\';
 
 files = dir(trainingSetDir);
 % Get a logical vector that tells which is a directory.
 dirFlags = [files.isdir];
 trainingFacePictureFolders = files(dirFlags);
 trainingFacePictureFolders(1:2) = [];
-smallestImgSize = [0,0, 239, 320];
-outputMask = floor(imcrop(imread('.\Images\mask_320.jpg'), smallestImgSize)./255);
+smallestImgSize = [0,0, 120, 160];
+outputMask = floor(imcrop(imread('.\Images\mask_160.jpg'), smallestImgSize)./255);
 
 k=0;
 %building training set
@@ -30,7 +30,8 @@ for i = 1 : length(trainingFacePictureFolders)
         filename = strcat(trainingSetDir,trainingFacePictureFolders(i).name,'\',trainingFacePictureFiles(j).name);
         image_data = imread(filename);             
         k = k + 1;                 
-        image_data = imcrop(image_data, smallestImgSize).*outputMask;; 
+        image_data = imcrop(image_data, smallestImgSize).*outputMask;
+        image_data = rgb2gray(image_data);
         trainingFaces(:,k) = image_data(:);
     end    
 end
@@ -84,6 +85,7 @@ for i = 1 : length(classFolders)
               searchPicFile = strcat(baseInputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name);              
               searchPicOrig = imread(searchPicFile);
               searchPicCropped = imcrop(searchPicOrig, smallestImgSize);
+              searchPicCropped = rgb2gray(searchPicCropped);
               searchPicCroppedNormalized = double(searchPicCropped)/255;              
               
               search = eigvec' * (searchPicCroppedNormalized(:) - meanFace);                                           
@@ -95,7 +97,7 @@ for i = 1 : length(classFolders)
               
               searchResult = figure('Color',[1 1 1], 'Visible', 'off');
               subplot(2,7,1); 
-              imshow(searchPicFile);
+              imshow(searchPicCropped);
               title('Search Picture');
               for resultIndex=1:13     
                   subplot(2,7,resultIndex+1);
