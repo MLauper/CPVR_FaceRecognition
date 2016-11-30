@@ -63,6 +63,8 @@ eigval = diag(eigval);                          % Get the eigenvalue from the di
 eigval = eigval / nImages;                      % Normalize eigenvalues
 [eigval, indices] = sort(eigval, 'descend');    % Sort the eigenvalues
 eigvec = eigvec(:, indices);                    % Sort the eigenvectors accordingly
+%discard first three PCs
+eigvec(1:3) = 0;
 
 rotatedTrainingFaces = eigvec' * normalizedTrainingFaces;
 
@@ -90,7 +92,7 @@ for i = 1 : length(classFolders)
               
               search = eigvec' * (searchPicCroppedNormalized(:) - meanFace);                                           
               for imgIndex=1:nImages                    
-                    distancePrincipalComponents(imgIndex) = (dot(rotatedTrainingFaces(:,imgIndex)-search, rotatedTrainingFaces(:,imgIndex)-search));                                        
+                    distancePrincipalComponents(imgIndex) = dot(rotatedTrainingFaces(:,imgIndex)-search, rotatedTrainingFaces(:,imgIndex)-search);                                        
               end;
               
               [sortedPrincipalComponents, sortIndex] = sort(distancePrincipalComponents); % sort distances  
