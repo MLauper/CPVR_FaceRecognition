@@ -12,7 +12,7 @@ baseInputDir = '.\out\FaceDetection\ViolaJones\';
 % Define training set directory
 trainingSetDir = '.\Images\cpvr_faces_320\';
 
-%% Train the PCA with the Training Set
+%% Train with the Training Set
 
 % Get input files
 files = dir(trainingSetDir);
