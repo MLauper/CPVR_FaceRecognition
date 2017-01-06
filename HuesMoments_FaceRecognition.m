@@ -4,92 +4,110 @@
 % Author:     Fabian Bigler, Marco Lauper
 % Date:       Nov-2016
 %##########################################################################
-clear all;
-baseOutputDir = '.\out\FaceRecognition\HuesMoments\';
 
-% search pictures from ViolaJones Face detection
-%searchDir = '.\out\FaceDetection\ViolaJones\2016HS\_DSC0372.JPG\';
+% Define output and input directory
+baseOutputDir = '.\out\FaceRecognition\HuesMoments\';
 baseInputDir = '.\out\FaceDetection\ViolaJones\';
 
+% Define training set directory
 trainingSetDir = '.\Images\cpvr_faces_320\';
 
+%% Train the PCA with the Training Set
+
+% Get input files
 files = dir(trainingSetDir);
-% Get a logical vector that tells which is a directory.
 dirFlags = [files.isdir];
 trainingFacePictureFolders = files(dirFlags);
 trainingFacePictureFolders(1:2) = [];
 smallestImgRectangle = [0,0, 239, 320];
-%smallestImgRectangle = [0,0, 120, 160];
 
 k=0;
-%building training set
 for i = 1 : length(trainingFacePictureFolders)        
+    
+    % Get Training Set Pictures
     trainingFacePictureFiles = dir(strcat(trainingSetDir,trainingFacePictureFolders(i).name));
     trainingFacePictureFiles(1:2) = [];    
     
+    % Loop over Training Set Pictures
     for j = 1 : length(trainingFacePictureFiles)           
+        
+        % Get picture
         filename = strcat(trainingSetDir,trainingFacePictureFolders(i).name,'\',trainingFacePictureFiles(j).name);
         image_data = imread(filename);             
-        k = k + 1;         
-        %im1        = abs(log10(invmoments(image_data)));
+        k = k + 1;
         image_data = imcrop(image_data, smallestImgRectangle); 
-        %first transfer to gray scale image
+        
+        % Convert Trianing Picture to Grayscale
         gray_image = rgb2gray(image_data);
-        %then extract hue's moments
-        %trainingFaceImages(:,k) = image_data(:);
+        
+        % Extract Hue's moments
         trainingFaceImages{k} = image_data;
-        %trainingFaceMoments(:,k) = abs(log10(invmoments(gray_image)));            
         trainingFaceMoments{k} = abs(log10(invmoments(gray_image)));            
-    end    
+    end
 end
 countTrainingImages = k;
 
+%% Try to identify Test Set pictures 
+
+% Get input files
 files = dir(baseInputDir);
 dirFlags = [files.isdir];
 classFolders = files(dirFlags);
 classFolders(1:2) = [];
+
 for i = 1 : length(classFolders)
+    
+    % Create output directory
     mkdir(strcat(baseOutputDir,classFolders(i).name));
-       
+
+    % Retrieve Test Set directories
     groupPictureDirectories = dir(strcat(baseInputDir,'\',classFolders(i).name));
     groupPictureDirectories(1:2) = [];
     
-     for j = 1 : length(groupPictureDirectories)    
-          mkdir(strcat(baseOutputDir, classFolders(i).name,'\', groupPictureDirectories(j).name));
-                    
-          searchPictures = dir(strcat(baseInputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name));     
-          searchPictures(1:2) = [];
-          for k = 1 : length(searchPictures)              
-              searchPic = strcat(baseInputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name);
-              %searchPic(1:2) = [];
-              %mkdir(strcat(baseOutputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name));
-              searchPicOrig = imread(searchPic);
-              searchPicCropped = imcrop(searchPicOrig, smallestImgRectangle);
-              searchPicGray = rgb2gray(searchPicCropped);
-              searchPicMoments = abs(log10(invmoments(searchPicGray)));
-              
-              for x=1:countTrainingImages                      
-                    resultMomentsDiff = norm(trainingFaceMoments{x}-searchPicMoments);    
-                    distanceMoments(x) = resultMomentsDiff;
-              end
-                [sortedDistanceMoments, sortIndex] = sort(distanceMoments); % sort distances                   
+    for j = 1 : length(groupPictureDirectories)
+        
+        % Create output child directory
+        mkdir(strcat(baseOutputDir, classFolders(i).name,'\', groupPictureDirectories(j).name));
+        
+        % List Test Set picture
+        searchPictures = dir(strcat(baseInputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name));     
+        searchPictures(1:2) = [];
+        
+        for k = 1 : length(searchPictures)              
+            
+            % Get specific test picture
+            searchPic = strcat(baseInputDir,'\',classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name);
+            searchPicOrig = imread(searchPic);
+            searchPicCropped = imcrop(searchPicOrig, smallestImgRectangle);
+            
+            % Convert picture to grayscale
+            searchPicGray = rgb2gray(searchPicCropped);
+            
+            % Extract Hue's Moments
+            searchPicMoments = abs(log10(invmoments(searchPicGray)));
+            
+            % Measure distance for each entry in Training Set
+            for x=1:countTrainingImages                      
+                resultMomentsDiff = norm(trainingFaceMoments{x}-searchPicMoments);    
+                distanceMoments(x) = resultMomentsDiff;
+            end
+            
+            % Sort the distances
+            [sortedDistanceMoments, sortIndex] = sort(distanceMoments);
+            
+            % Display nearest matches results
+            searchResult = figure('Color',[1 1 1], 'Visible', 'off');
+            subplot(2,7,1);
+            imshow(searchPic);
+            title('Search Picture');
+            for y=1:13
+                subplot(2,7,y+1); 
+                imshow(trainingFaceImages{sortIndex(y)});
+                title(sprintf('Dist=%2.2f',sortedDistanceMoments(y)));
+            end;
 
-                %figure('Visible','off')
-                searchResult = figure('Color',[1 1 1], 'Visible', 'off');
-                subplot(2,7,1); 
-                imshow(searchPic);
-                title('Search Picture');
-                for y=1:13
-                    subplot(2,7,y+1); 
-                    %imshow(searchPic);
-                    %imshow(trainingFaceImages(:,sortIndex(i)));   
-                    imshow(trainingFaceImages{sortIndex(y)});
-                    %imshow((reshape(mn+faces(:,sortIndex(i)), imsize))); 
-                    title(sprintf('Dist=%2.2f',sortedDistanceMoments(y)));
-                end;
-
-                saveas(searchResult, strcat(baseOutputDir,classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name))
-          end                              
-          %outputPath = strcat(baseOutPutDir,classFolders(i).name,'\', groupPictures(j).name, '\',sprintf('%02d.jpg', k));
+            % Save result
+            saveas(searchResult, strcat(baseOutputDir,classFolders(i).name, '\', groupPictureDirectories(j).name, '\',searchPictures(k).name))
+        end
      end
-end;
+end
